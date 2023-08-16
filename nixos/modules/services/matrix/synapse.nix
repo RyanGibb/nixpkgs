@@ -683,8 +683,8 @@ in {
               '';
             };
             turn_shared_secret = mkOption {
-              type = types.str;
-              default = "";
+              type = types.nullOr types.str;
+              default = null;
               example = literalExpression ''
                 config.services.coturn.static-auth-secret
               '';
