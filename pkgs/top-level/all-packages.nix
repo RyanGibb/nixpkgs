@@ -5943,6 +5943,8 @@ with pkgs;
 
   maigret = callPackage ../tools/security/maigret { };
 
+  maildir-rank-addr = callPackage ../applications/misc/maildir-rank-addr { };
+
   maliit-framework = libsForQt5.callPackage ../applications/misc/maliit-framework { };
 
   maliit-keyboard = libsForQt5.callPackage ../applications/misc/maliit-keyboard { };
