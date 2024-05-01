@@ -6,6 +6,7 @@
 , pythonPackages
 , emacs
 , ruby
+, rubyPackages
 , testers
 , gitUpdater
 , which, dtach, openssl, bash, gdb, man, git
@@ -77,8 +78,7 @@ stdenv.mkDerivation rec {
   '';
 
   outputs = [ "out" "man" "info" "bindingconfig" ]
-    ++ lib.optional withEmacs "emacs"
-    ++ lib.optional withRuby "ruby";
+    ++ lib.optional withEmacs "emacs";
 
   # if notmuch is built with s-expression support, the testsuite (T-850.sh) only
   # passes if notmuch-git can be executed, so we need to patch its shebang.
@@ -117,7 +117,7 @@ stdenv.mkDerivation rec {
     moveToOutput bin/notmuch-emacs-mua $emacs
   '' + lib.optionalString withRuby ''
     make -C bindings/ruby install \
-      vendordir=$ruby/lib/ruby \
+      vendordir=$out/lib/ruby \
       SHELL=$SHELL \
       $makeFlags "''${makeFlagsArray[@]}" \
       $installFlags "''${installFlagsArray[@]}"
@@ -131,6 +131,10 @@ stdenv.mkDerivation rec {
     make -C vim DESTDIR="$out/share/vim-plugins/notmuch" prefix="" install
     mkdir -p $out/share/nvim
     ln -s $out/share/vim-plugins/notmuch $out/share/nvim/site
+  '' + lib.optionalString (withVim && withRuby) ''
+    cat >> $out/share/vim-plugins/notmuch/plugin/notmuch.vim << EOF
+      let \$RUBYLIB=\$RUBYLIB . ":$out/${ruby.libPath}/${ruby.system}:${rubyPackages.mail}/lib/ruby/gems/${ruby.version.libDir}/gems/mail-${rubyPackages.mail.version}/lib"
+    EOF
   '';
 
   passthru = {
